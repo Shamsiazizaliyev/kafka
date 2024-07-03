@@ -3,12 +3,18 @@ package az.ingress.unittest.service;
 import az.ingress.unittest.dto.Transfer;
 import az.ingress.unittest.repository.TranferRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+
 public class TransferService {
 
     private final TranferRepository repository;
@@ -17,14 +23,31 @@ public class TransferService {
 
 
     public String producesString(String name) {
+        Transfer transfer = Transfer.builder()
+                .name(name)
+                .balance(500.0)
+                .build();
+        try {
 
-        Transfer transfer=new Transfer();
-        // kafkaTemplate.send("ms22",1,"name",name);
-        kafkaTemplate.send("ms22","1234",name);
+            CompletableFuture<SendResult<String, Object>> sendResult =
+                    kafkaTemplate.send("ms22","2",transfer);
 
+            sendResult.whenComplete((result, ex) -> {
 
-        return "ok";
+                if (ex == null) {
+                    log.info("Data successfully sending to kafka");
+                } else {
+                    log.error("There occur error");
+                }
+            });
+
+        } catch (Exception e) {
+            log.info("Exception is -- {}", e.getMessage());
+        }
+
+        return "OK";
     }
+
     public Transfer getTranfer(Long id) {
 
          return repository.findById(id).orElseThrow();

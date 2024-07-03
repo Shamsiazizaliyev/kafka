@@ -17,5 +17,9 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    bootstrap-servers: localhost:19092
+      retries: 3
+      retry.backoff.ms: 1000
+      acks: all
+
+    bootstrap-servers: localhost:9092
 
