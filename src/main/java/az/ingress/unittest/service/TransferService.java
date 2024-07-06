@@ -29,10 +29,10 @@ public class TransferService {
                 .build();
         try {
 
-            CompletableFuture<SendResult<String, Object>> sendResult =
-                    kafkaTemplate.send("ms22","2",transfer);
+            CompletableFuture<SendResult<String, Object >> sendResult =
+                    kafkaTemplate.send("ms22",transfer);
 
-            sendResult.whenComplete((result, ex) -> {
+              sendResult.whenComplete((result, ex) -> {
 
                 if (ex == null) {
                     log.info("Data successfully sending to kafka");
