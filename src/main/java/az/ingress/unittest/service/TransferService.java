@@ -4,6 +4,7 @@ import az.ingress.unittest.dto.Transfer;
 import az.ingress.unittest.repository.TranferRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -20,6 +21,8 @@ public class TransferService {
     private final TranferRepository repository;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    @Value("${topic.name}")
+    private String topicName;
 
 
     public String producesString(String name) {
@@ -30,7 +33,7 @@ public class TransferService {
         try {
 
             CompletableFuture<SendResult<String, Object >> sendResult =
-                    kafkaTemplate.send("ms22",transfer);
+                    kafkaTemplate.send(topicName,"key",transfer);
 
               sendResult.whenComplete((result, ex) -> {
 
